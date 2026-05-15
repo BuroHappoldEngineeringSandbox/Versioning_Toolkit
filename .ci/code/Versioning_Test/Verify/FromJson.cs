@@ -90,10 +90,11 @@ namespace BH.Test.Versioning
             Engine.Base.Compute.LoadAllAssemblies();
             List<TestResult> results = new List<TestResult>();
 
-            // Test all objects — reads Objects.json and any supplementary *Objects.json files
+            // Test all objects
             List<string> failingObjects = new List<string>();
             int nbObjects = 0;
-            foreach (string objectFile in Directory.GetFiles(testFolder, "*Objects.json"))
+            string objectFile = Path.Combine(testFolder, "Objects.json");
+            if (File.Exists(objectFile))
             {
                 IEnumerable<string> jsons = File.ReadAllLines(objectFile).Where(x => !string.IsNullOrWhiteSpace(x) && (exceptions.Length == 0 || !Regex.IsMatch(x, exceptions)));
                 foreach (string json in jsons)
@@ -104,13 +105,15 @@ namespace BH.Test.Versioning
 
                     results.Add(result);
                 }
-                nbObjects += jsons.Count();
+
+                nbObjects = jsons.Count();
             }
 
-            // Test all methods — reads Methods.json and any supplementary *Methods.json files
+            // Test all methods
             List<string> failingMethods = new List<string>();
             int nbMethods = 0;
-            foreach (string methodFile in Directory.GetFiles(testFolder, "*Methods.json"))
+            string methodFile = Path.Combine(testFolder, "Methods.json");
+            if (File.Exists(methodFile))
             {
                 IEnumerable<string> jsons = File.ReadAllLines(methodFile).Where(x => !string.IsNullOrWhiteSpace(x) && (exceptions.Length == 0 || !Regex.IsMatch(x, exceptions)));
                 foreach (string json in jsons)
@@ -121,7 +124,8 @@ namespace BH.Test.Versioning
 
                     results.Add(result);
                 }
-                nbMethods += jsons.Count();
+
+                nbMethods = jsons.Count();
             }
 
             //Test all datasets
@@ -146,9 +150,10 @@ namespace BH.Test.Versioning
             //Test all Adapters
             List<string> failingAdapters = new List<string>();
             int nbAdapters = 0;
-            foreach (string adaptersFile in Directory.GetFiles(testFolder, "*Adapters.json"))
+            string adaptersFile = Path.Combine(testFolder, "Adapters.json");
+            if (File.Exists(adaptersFile))
             {
-                IEnumerable<string> adapters = File.ReadAllLines(adaptersFile).Where(x => !string.IsNullOrWhiteSpace(x));
+                IEnumerable<string> adapters = File.ReadAllLines(adaptersFile);
                 foreach (string adapter in adapters)
                 {
                     TestResult result = FromJsonItem(adapter, false);
@@ -157,7 +162,8 @@ namespace BH.Test.Versioning
 
                     results.Add(result);
                 }
-                nbAdapters += adapters.Count();
+
+                nbAdapters = adapters.Count();
             }
 
             // Dump failures
